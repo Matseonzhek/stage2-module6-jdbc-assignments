@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SimpleJDBCRepository {
 
-    private static final String createUserSQL = "INSERT INTO users (firstName, lastName, age) VALUES (NULL, NULL, 0);";
+    private static final String createUserSQL = "INSERT INTO users (firstName, lastName, age) VALUES (?, ?, ?);";
     private static final String updateUserSQL = "UPDATE users SET firstname = ?, lastname = ?, age= ? WHERE id=?;";
     private static final String deleteUser = "DELETE FROM users WHERE id = ?";
     private static final String findUserByIdSQL = "SELECT * FROM users WHERE id = ?;";
@@ -27,15 +27,22 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    public Long createUser() throws SQLException, IOException {
+    public Long createUser(User user) throws SQLException, IOException {
+        Long id = 0L;
         connection = CustomDataSource.getInstance().getConnection();
-        st = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-        st.executeUpdate(createUserSQL);
-        ResultSet resultSet = st.executeQuery(findAllUserSQL);
-        resultSet.last();
-        connection.close();
-        resultSet.close();
-        return (long) resultSet.getRow();
+        ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS);
+        ps.setString(1, user.getFirstName());
+        ps.setString(2, user.getLastName());
+        ps.setInt(3, user.getAge());
+        int affectedRows = ps.executeUpdate();
+
+        if (affectedRows > 0) {
+            ResultSet resultSet = ps.getGeneratedKeys();
+            if (resultSet.next()) {
+                id = resultSet.getLong(1);
+            }
+        }
+        return id;
     }
 
     public User findUserById(Long userId) throws SQLException, IOException {
