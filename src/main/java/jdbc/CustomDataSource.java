@@ -5,10 +5,7 @@ import lombok.Setter;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -33,16 +30,16 @@ public class CustomDataSource implements DataSource {
 
     public static CustomDataSource getInstance() {
         Properties properties = new Properties();
-        try (InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/app.properties"))) {
-            properties.load(inputStream);
+        try {
+            properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         if (instance == null) {
             instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
                     properties.getProperty("postgres.password"), properties.getProperty("postgres.name"));
-        }
-        else {
+        } else {
             try {
                 if (instance.getConnection().isClosed()) {
                     instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
@@ -58,12 +55,12 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public Connection getConnection() {
-        return new CustomConnector().getConnection(url, name, password );
+        return new CustomConnector().getConnection(url, name, password);
     }
 
     @Override
     public Connection getConnection(String username, String password) {
-        return new CustomConnector().getConnection(url,name, this.password);
+        return new CustomConnector().getConnection(url, name, this.password);
     }
 
     @Override
