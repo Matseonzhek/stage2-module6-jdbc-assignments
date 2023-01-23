@@ -47,7 +47,7 @@ public class SimpleJDBCRepository {
             connection.close();
             ps.close();
 
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return id;
@@ -72,7 +72,7 @@ public class SimpleJDBCRepository {
             connection.close();
             resultSet.close();
             resultSet.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return new User(userId, firstName, lastName, age);
@@ -100,7 +100,7 @@ public class SimpleJDBCRepository {
             connection.close();
             resultSet.close();
             ps.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return user;
@@ -120,7 +120,7 @@ public class SimpleJDBCRepository {
             }
             connection.close();
             resultSet.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return users;
@@ -138,7 +138,7 @@ public class SimpleJDBCRepository {
 
             connection.close();
             ps.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return findUserById(user.getId());
@@ -151,7 +151,7 @@ public class SimpleJDBCRepository {
             ps.setLong(1, userId);
             ps.executeUpdate();
             connection.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
