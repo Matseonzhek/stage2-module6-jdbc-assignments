@@ -8,12 +8,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 @Getter
 @Setter
 public class CustomDataSource implements DataSource {
+    private static final SQLException SQL_EXCEPTION = new SQLException();
+    private static final Object MONITOR = new Object();
     private static volatile CustomDataSource instance;
     private final String driver;
     private final String url;
@@ -26,11 +29,14 @@ public class CustomDataSource implements DataSource {
         this.url = url;
         this.name = name;
         this.password = password;
+        instance = this;
     }
 
     public static CustomDataSource getInstance() {
         if (instance == null) {
-            synchronized (new Object()) {
+
+            synchronized (MONITOR) {
+
                 if (instance == null) {
                     try {
                         Properties properties = new Properties();
@@ -58,41 +64,41 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public Connection getConnection(String username, String password) {
-        return new CustomConnector().getConnection(url, name, this.password);
+        return new CustomConnector().getConnection(url, username, password);
     }
 
     @Override
-    public PrintWriter getLogWriter() {
-        return null;
+    public PrintWriter getLogWriter() throws SQLException {
+        throw SQL_EXCEPTION;
     }
 
     @Override
-    public void setLogWriter(PrintWriter out) {
-
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        throw SQL_EXCEPTION;
     }
 
     @Override
-    public int getLoginTimeout() {
-        return 0;
+    public int getLoginTimeout() throws SQLException {
+        throw SQL_EXCEPTION;
     }
 
     @Override
-    public void setLoginTimeout(int seconds) {
-
+    public void setLoginTimeout(int seconds) throws SQLException {
+        throw SQL_EXCEPTION;
     }
 
     @Override
-    public Logger getParentLogger() {
-        return null;
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException();
     }
 
     @Override
-    public <T> T unwrap(Class<T> iface) {
-        return null;
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw SQL_EXCEPTION;
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> iface) {
-        return false;
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        throw SQL_EXCEPTION;
     }
 }
