@@ -29,24 +29,22 @@ public class CustomDataSource implements DataSource {
     }
 
     public static CustomDataSource getInstance() {
-        Properties properties = new Properties();
-        try {
-            properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         if (instance == null) {
-            instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
-                    properties.getProperty("postgres.password"), properties.getProperty("postgres.name"));
-        } else {
-            try {
-                if (instance.getConnection().isClosed()) {
-                    instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
-                            properties.getProperty("postgres.password"), properties.getProperty("postgres.name"));
+            synchronized (new Object()) {
+                if (instance == null) {
+                    try {
+                        Properties properties = new Properties();
+                        properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
+                        instance = new CustomDataSource(
+                                properties.getProperty("postgres.driver"),
+                                properties.getProperty("postgres.url"),
+                                properties.getProperty("postgres.password"),
+                                properties.getProperty("postgres.name")
+                        );
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
 
