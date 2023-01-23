@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -41,28 +42,28 @@ public class CustomDataSource implements DataSource {
             instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
                     properties.getProperty("postgres.password"), properties.getProperty("postgres.name"));
         }
-//        else {
-//            try {
-//                if (instance.getConnection().isClosed()) {
-//                    instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
-//                            properties.getProperty("postgres.password"), properties.getProperty("postgres.name"));
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        else {
+            try {
+                if (instance.getConnection().isClosed()) {
+                    instance = new CustomDataSource(properties.getProperty("postgres.driver"), properties.getProperty("postgres.url"),
+                            properties.getProperty("postgres.password"), properties.getProperty("postgres.name"));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
         return instance;
     }
 
     @Override
     public Connection getConnection() {
-        return new CustomConnector().getConnection(getUrl(), getName(), getPassword());
+        return new CustomConnector().getConnection(url, name, password );
     }
 
     @Override
     public Connection getConnection(String username, String password) {
-        return new CustomConnector().getConnection(getUrl(), getName(), getPassword());
+        return new CustomConnector().getConnection(url,name, this.password);
     }
 
     @Override

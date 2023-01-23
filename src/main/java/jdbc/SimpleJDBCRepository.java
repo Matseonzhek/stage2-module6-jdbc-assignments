@@ -17,12 +17,12 @@ import java.util.List;
 @NoArgsConstructor
 public class SimpleJDBCRepository {
 
-    private static final String createUserSQL = "INSERT INTO users (firstName, lastName, age) VALUES (?, ?, ?);";
-    private static final String updateUserSQL = "UPDATE users SET firstname = ?, lastname = ?, age= ? WHERE id=?;";
-    private static final String deleteUser = "DELETE FROM users WHERE id = ?";
-    private static final String findUserByIdSQL = "SELECT * FROM users WHERE id = ?;";
-    private static final String findUserByNameSQL = "SELECT * FROM users WHERE firstName =?;";
-    private static final String findAllUserSQL = "SELECT * FROM users order by id asc;";
+    private static final String createUserSQL = "INSERT INTO myusers (firstName, lastName, age) VALUES (?, ?, ?);";
+    private static final String updateUserSQL = "UPDATE myusers SET firstname = ?, lastname = ?, age= ? WHERE id=?;";
+    private static final String deleteUser = "DELETE FROM myusers WHERE id = ?";
+    private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id = ?;";
+    private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstName =?;";
+    private static final String findAllUserSQL = "SELECT * FROM myusers order by id asc;";
     private Connection connection = null;
     private PreparedStatement ps = null;
     private Statement st = null;
